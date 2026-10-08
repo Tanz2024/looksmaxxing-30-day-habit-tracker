@@ -1,9 +1,10 @@
 export const HABITS=[['skincare','Skincare','Cleanse + moisturize','ph-sparkle'],['exercise','Exercise','Move for at least 20 minutes','ph-person-simple-run'],['sleep','Sleep','Get 7+ hours tonight','ph-moon'],['grooming','Grooming','One intentional grooming ritual','ph-scissors'],['hydration','Hydration','Drink 2L of water','ph-drop']];
 export const KEY='looksmaxxing-reset-v1';
 export function blankState(){return {startDate:dateKey(new Date()),days:{}}}
-export function dateKey(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate()).toISOString().slice(0,10)}
-export function loadState(storage=localStorage){try{const raw=storage.getItem(KEY);return raw?JSON.parse(raw):blankState()}catch{return blankState()}}
-export function saveState(state,storage=localStorage){try{storage.setItem(KEY,JSON.stringify(state));return true}catch{return false}}
+export function dateKey(d){const year=d.getFullYear();const month=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return `${year}-${month}-${day}`}
+function browserStorage(){return typeof window==='undefined'?null:window.localStorage}
+export function loadState(storage=browserStorage()){try{const raw=storage?.getItem(KEY);return raw?JSON.parse(raw):blankState()}catch{return blankState()}}
+export function saveState(state,storage=browserStorage()){try{storage?.setItem(KEY,JSON.stringify(state));return Boolean(storage)}catch{return false}}
 export function dayOffset(start,day){return Math.floor((new Date(day+'T00:00:00')-new Date(start+'T00:00:00'))/86400000)}
 export function percent(values){return Math.round(values.filter(Boolean).length/HABITS.length*100)}
 const state=loadState(); const today=dateKey(new Date());

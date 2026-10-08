@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
-import {HABITS,blankState,percent,saveState,loadState} from './app.js';
+process.env.TZ='Asia/Kuala_Lumpur';
+const {HABITS,blankState,percent,saveState,loadState,dateKey}=await import('./app.js');
 assert.equal(percent([true,true,false,false,false]),40);
 assert.equal(percent([true,true,true,true,true]),100);
+assert.doesNotThrow(() => loadState(), 'Node should not require browser localStorage');
+assert.equal(dateKey(new Date('2025-01-01T00:30:00+08:00')),'2025-01-01', 'dateKey should use local calendar date');
+assert.equal(dateKey(new Date('2025-06-30T23:45:00+08:00')),'2025-06-30', 'dateKey should remain on the Kuala Lumpur date');
 const memory={data:new Map(),getItem(k){return this.data.get(k)||null},setItem(k,v){this.data.set(k,v)}};
 const state=blankState(); state.days[state.startDate]=[true,false,true,false,false]; assert.equal(saveState(state,memory),true); assert.deepEqual(loadState(memory),state);
 console.log('All tests passed: progress calculation and storage behavior');
